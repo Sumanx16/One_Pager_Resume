@@ -2,7 +2,7 @@
 
 This is an interactive, single-page web application designed as a personal portfolio and strategic supplement to a resume. It showcases my professional fit for a role by detailing my core strengths and outlines my structured approach to crisis management.
 
-**[Live Demo](https://your-github-username.github.io/your-repo-name/pager.html)** &nbsp; *(<- Replace with your live GitHub Pages link after uploading!)*
+**[Live Demo](https://sumanx16.github.io/One_Pager_Resume/)** &nbsp; *(<- Click Here)*
 
 ---
 
