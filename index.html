@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>Suman Kumar | Strategic One-Pager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutrals (Stone, Amber) -->
+    <!-- Application Structure Plan: The application is designed as a two-part interactive dashboard, navigated by main tabs ("Strategic Fit", "Crisis Plan"). This structure was chosen to directly mirror the two-prompt nature of the source report, allowing a user (like a hiring manager) to immediately dive into the specific answer they care about. 
+    1. "Strategic Fit" View: This section deconstructs the argument into three clickable "pillars" (Automation, Data, Execution). This is more engaging than a static list and allows the user to explore the evidence for each claim at their own pace. It is paired with a skills radar chart, which visually and quantitatively supports the claims being made in the text.
+    2. "Crisis Plan" View: This section translates the 5-step text list into an interactive, horizontal process flow. This is a superior UX because it visually represents the *procedural* nature of the plan. Clicking each step reveals its details, preventing the user from being overwhelmed by a wall of text and reinforcing the idea of a structured, step-by-step approach.
+    This design prioritizes clarity, engagement, and alignment with the source document's core purpose: to make a persuasive, two-part argument. -->
+    <!-- Visualization & Content Choices:
+    1.  Report Info: "Best Fit" 3-part argument.
+        Goal: Allow user to explore each part of the argument.
+        Viz/Method: Interactive Pillar Selector (3 HTML buttons).
+        Interaction: On click, a JS function updates the `innerHTML` of a dedicated text-display `div` with the corresponding argument from a JS object. Active states are toggled.
+        Justification: Breaks a large text block into digestible, user-selected pieces, improving comprehension and engagement.
+        Library: Vanilla JS.
+    2.  Report Info: Skills from the resume (supporting the "Best Fit" claim).
+        Goal: Visually quantify and summarize technical/strategic breadth.
+        Viz/Method: Radar Chart (Chart.js on Canvas).
+        Interaction: Hover to see tooltips with skill names and proficiency.
+        Justification: A radar chart is a compact and professional way to show multi-dimensional strengths, visually backing up the text claims.
+        Library: Chart.js (Canvas).
+    3.  Report Info: 5-step "Crisis Plan."
+        Goal: Present a multi-step process in an intuitive, non-linear way.
+        Viz/Method: 5-Step Interactive Process Flow (5 HTML buttons styled as a flow).
+        Interaction: On click, a JS function updates the `innerHTML` of a separate text-display `div` with step details. Active states are toggled.
+        Justification: Translates a static list into an interactive flow, which is better for communicating a *process*. It's self-paced and less intimidating than a long list.
+        Library: Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-btn.active {
+            background-color: #f59e0b;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .pillar-btn.active, .step-btn.active {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">
+
+    <div class="container max-w-5xl mx-auto p-4 md:p-8 min-h-screen">
+        
+        <header class="flex flex-col md:flex-row justify-between items-center border-b-2 border-stone-300 pb-6 mb-6">
+            <div>
+                <h1 class="text-4xl font-bold text-stone-900">Suman Kumar</h1>
+                <p class="text-xl text-stone-700">Strategic One-Pager</p>
+            </div>
+            <div class="flex flex-col md:flex-row space-y-1 md:space-y-0 md:space-x-4 text-sm text-stone-600 mt-2 md:mt-0 text-left md:text-right">
+                <a href="tel:+919631087492" class="hover:text-amber-600">+91-9631087492</a>
+                <a href="mailto:sumankrsinha14@gmail.com" class="hover:text-amber-600">sumankrsinha14@gmail.com</a>
+                <a href="https://www.linkedin.com/in/suman-kumar16/" target="_blank" rel="noopener noreferrer" class="hover:text-amber-600">LinkedIn Profile</a>
+            </div>
+        </header>
+
+        <nav class="mb-8 flex justify-center">
+            <div class="flex space-x-2 bg-white shadow-md rounded-full p-2">
+                <button id="nav-fit" data-view="fit" class="nav-btn py-2 px-4 md:px-6 rounded-full font-medium text-stone-700 transition-all duration-300">
+                    My Strategic Fit
+                </button>
+                <button id="nav-plan" data-view="plan" class="nav-btn py-2 px-4 md:px-6 rounded-full font-medium text-stone-700 transition-all duration-300">
+                    My Crisis Plan
+                </button>
+            </div>
+        </nav>
+
+        <main>
+            <section id="fit-content">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Why I Am the Best Fit</h2>
+                    <p class="text-lg text-stone-700 max-w-3xl mx-auto">
+                        This section explores my alignment with the role's core needs. My experience is built on three key pillars: Automation, Data-Driven Strategy, and Hands-On Execution. Click each pillar to see the supporting evidence from my background.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="flex flex-col space-y-4">
+                        <button data-pillar="automation" class="pillar-btn p-4 bg-white rounded-lg shadow-sm border-2 border-transparent text-left transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                            <h3 class="text-lg font-semibold text-stone-800">1. Automation & Scalability</h3>
+                            <p class="text-sm text-stone-600">Building and optimizing automated, scalable web solutions.</p>
+                        </button>
+                        <button data-pillar="data" class="pillar-btn p-4 bg-white rounded-lg shadow-sm border-2 border-transparent text-left transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                            <h3 class="text-lg font-semibold text-stone-800">2. Data-Driven Strategy</h3>
+                            <p class="text-sm text-stone-600">Analyzing data and tracking KPIs to support strategic decisions.</p>
+                        </button>
+                        <button data-pillar="execution" class="pillar-btn p-4 bg-white rounded-lg shadow-sm border-2 border-transparent text-left transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                            <h3 class="text-lg font-semibold text-stone-800">3. Problem-Solving & Execution</h3>
+                            <p class="text-sm text-stone-600">Managing full development cycles to deliver functional solutions.</p>
+                        </button>
+
+                        <div id="pillar-text-display" class="mt-4 p-5 bg-white rounded-lg shadow-inner min-h-[200px] text-stone-700 prose prose-sm">
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-lg p-4 md:p-6">
+                        <h3 class="text-xl font-semibold text-stone-800 mb-4 text-center">Supporting Skills Profile</h3>
+                        <div class="chart-container">
+                            <canvas id="skills-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="plan-content" class="hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-stone-900 mb-2">Approach to a Sudden 20% Metric Drop</h2>
+                    <p class="text-lg text-stone-700 max-w-3xl mx-auto">
+                        This is my structured, 5-step plan for diagnosing and resolving a sudden critical issue. This approach focuses on immediate diagnosis, clear communication, and decisive action. Click each step to see the detailed process.
+                    </p>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-between space-y-2 md:space-y-0 md:space-x-2 mb-6">
+                    <button data-step="1" class="step-btn flex-1 p-3 bg-white rounded-lg shadow-sm border-2 border-transparent text-center transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                        <span class="font-semibold">Step 1:</span> Triage
+                    </button>
+                    <button data-step="2" class="step-btn flex-1 p-3 bg-white rounded-lg shadow-sm border-2 border-transparent text-center transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                        <span class="font-semibold">Step 2:</span> Isolate
+                    </button>
+                    <button data-step="3" class="step-btn flex-1 p-3 bg-white rounded-lg shadow-sm border-2 border-transparent text-center transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                        <span class="font-semibold">Step 3:</span> Communicate
+                    </button>
+                    <button data-step="4" class="step-btn flex-1 p-3 bg-white rounded-lg shadow-sm border-2 border-transparent text-center transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                        <span class="font-semibold">Step 4:</span> Execute
+                    </button>
+                    <button data-step="5" class="step-btn flex-1 p-3 bg-white rounded-lg shadow-sm border-2 border-transparent text-center transition-all duration-300 hover:shadow-md hover:border-amber-400">
+                        <span class="font-semibold">Step 5:</span> Monitor
+                    </button>
+                </div>
+
+                <div id="step-text-display" class="p-6 bg-white rounded-lg shadow-inner min-h-[300px] text-stone-700 prose">
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const pillarData = {
+                automation: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">Automation & Scalability</h4>
+                    <p>As a <strong>Web Developer at SR Digital Marketing</strong>, my core focus was building and optimizing scalable web applications. I "Integrated APIs and collaborated with teams for scalable solutions," demonstrating my ability to automate processes and enhance system efficiency.</p>
+                    <p class="mt-2">This practical, hands-on experience in building automated, responsive systems is directly applicable to managing and optimizing supply strategies.</p>
+                `,
+                data: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">Data-Driven Strategy</h4>
+                    <p>My internship in <strong>Sales Strategy & Operations at HighRadius</strong> provided a strong foundation in strategic analysis. I was responsible for "Analyz[ing] sales data and creat[ing] reports to support decision-making" and "streamlining reporting processes."</p>
+                    <p class="mt-2">This role required me to identify patterns, track KPIs, and translate raw data into actionable insights—the exact skills needed to monitor supply channels, identify opportunities for automation, and make informed strategic decisions.</p>
+                `,
+                execution: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">Problem-Solving & Execution</h4>
+                    <p>In my project work, such as developing the <strong>MakeVisions Outsourcing website</strong>, I managed the full development lifecycle, from design to API integration.</p>
+                    <p class="mt-2">This proves my ability to not only devise a strategy but also to execute it technically, ensuring solutions are not just theoretical but functional and reliable.</p>
+                `
+            };
+
+            const planData = {
+                1: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">1. Immediate Triage & Data Validation</h4>
+                    <p><strong>Is it real?</strong> My first step is to confirm the drop is not a data-integrity or reporting error. I would check data pipelines, query the database directly (using my MySQL/MongoDB skills), and check if any recent code pushes (which I've "tested and optimized" in my developer role) could be affecting analytics.</p>
+                `,
+                2: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">2. Isolate the "Why" (Analysis & Hypothesis)</h4>
+                    <p><strong>Where is the drop?</strong> Using my data analysis skills from HighRadius, I would segment the data to pinpoint the source.</p>
+                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                        <li><strong>By Source:</strong> Is it one supply partner, a specific marketing channel, or across the board?</li>
+                        <li><strong>By Segment:</strong> Is it affecting a particular region, device type, or user demographic?</li>
+                        <li><strong>By Time:</strong> Did it correlate precisely with an internal change (e.g., new feature release) or an external event (e.g., competitor launch, holiday)?</li>
+                    </ul>
+                    <p class="mt-2">This analysis would lead to a primary hypothesis (e.g., "Our largest partner's API is failing," or "A recent update broke a key user flow on mobile").</p>
+                `,
+                3: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">3. Stakeholder Communication & Collaboration</h4>
+                    <p><strong>No one works in a silo.</strong> I would immediately provide a concise, factual update to key stakeholders (e.g., product, engineering, leadership).</p>
+                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                        <li><strong>What I know:</strong> "We are seeing a 20% drop in Metric X, starting at 10:00 AM."</li>
+                        <li><strong>What I'm doing:</strong> "I have validated the data and am currently investigating Segment Y... I am collaborating with Engineering..."</li>
+                        <li><strong>When I'll update:</strong> "I will send another update in 60 minutes or as soon as I have a root cause."</li>
+                    </ul>
+                `,
+                4: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">4. Formulate & Execute Action Plan</h4>
+                    <p>Once the "why" is confirmed, I would propose a solution:</p>
+                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                        <li><strong>Technical Issue:</strong> Collaborate with engineering to roll back the change or deploy an immediate hotfix.</li>
+                        <li><strong>Partner Issue:</strong> Contact the partner to resolve the issue; simultaneously, begin reallocating resources/supply to mitigate the impact.</li>
+                        <li><strong>Market Issue:</strong> Convene with the strategy team to develop a competitive response.</li>
+                    </ul>
+                    <p class="mt-2">My "strong problem-solving" and "project management" skills would be crucial here to ensure the plan is executed quickly and efficiently.</p>
+                `,
+                5: `
+                    <h4 class="font-semibold text-lg text-stone-800 mb-2">5. Monitor & Post-Mortem</h4>
+                    <p>After executing the fix, I would closely monitor the metric to ensure it returns to normal.</p>
+                    <p class="mt-2">Finally, I would help conduct a brief post-mortem to document what happened, why it happened, and what steps can be taken to automate detection or prevent it from happening again.</p>
+                `
+            };
+
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const pillarButtons = document.querySelectorAll('.pillar-btn');
+            const stepButtons = document.querySelectorAll('.step-btn');
+
+            const fitContent = document.getElementById('fit-content');
+            const planContent = document.getElementById('plan-content');
+            
+            const pillarDisplay = document.getElementById('pillar-text-display');
+            const stepDisplay = document.getElementById('step-text-display');
+
+            function showView(viewId) {
+                fitContent.classList.toggle('hidden', viewId !== 'fit');
+                planContent.classList.toggle('hidden', viewId !== 'plan');
+                
+                navButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.view === viewId);
+                });
+            }
+
+            function showPillar(pillarId) {
+                pillarDisplay.innerHTML = pillarData[pillarId];
+                
+                pillarButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.pillar === pillarId);
+                });
+            }
+
+            function showStep(stepId) {
+                stepDisplay.innerHTML = planData[stepId];
+
+                stepButtons.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.step === stepId);
+                });
+            }
+
+            function createSkillsChart() {
+                const ctx = document.getElementById('skills-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: [
+                            'Front-End (React, JS)', 
+                            'Back-End (Node)', 
+                            'Data/Databases (Mongo, MySQL)', 
+                            'Data Strategy (Analytics)', 
+                            'Tools (Git, Firebase)'
+                        ],
+                        datasets: [{
+                            label: 'Self-Assessed Proficiency',
+                            data: [9, 7, 7, 8, 8],
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            pointBackgroundColor: 'rgba(245, 158, 11, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(245, 158, 11, 1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.r !== null) {
+                                            label += context.parsed.r + ' / 10';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 10,
+                                ticks: {
+                                    stepSize: 2,
+                                    backdropColor: 'transparent'
+                                },
+                                pointLabels: {
+                                    font: {
+                                        size: 11
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => showView(btn.dataset.view));
+            });
+            
+            pillarButtons.forEach(btn => {
+                btn.addEventListener('click', () => showPillar(btn.dataset.pillar));
+            });
+
+            stepButtons.forEach(btn => {
+                btn.addEventListener('click', () => showStep(btn.dataset.step));
+            });
+
+            showView('fit');
+            showPillar('automation');
+            showStep('1');
+            createSkillsChart();
+        });
+    </script>
+
+</body>
+</html>
